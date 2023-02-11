@@ -1,5 +1,10 @@
+// Import modules
 import express from "express"
 import resource from './_router'
+
+// Import source
+import { register } from "../controllers/user_controller";
+import { registerUserValidation } from "../validations/user_validation";
 
 // instantiate a new router
 const router = express.Router()
@@ -13,6 +18,6 @@ router.get('/', (req, res) => {
 	})
 })
 
-router.post('/register', register) //Setup a middleware to check validaton and rules.
+router.post('/register', registerUserValidation, register)
 
 export default router
