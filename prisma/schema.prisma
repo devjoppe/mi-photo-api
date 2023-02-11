@@ -19,20 +19,28 @@ model User {
 }
 
 model Album {
-  id     Int     @id @default(autoincrement())
+  id     Int              @id @default(autoincrement())
   title  String
   userId Int
-  user   User    @relation(fields: [userId], references: [id])
-  photos Photo[]
+  user   User             @relation(fields: [userId], references: [id])
+  photos photosInAlbums[]
 }
 
 model Photo {
-  id      Int    @id @default(autoincrement())
+  id      Int              @id @default(autoincrement())
   title   String
   url     String
-  comment String @default("No comments")
+  comment String           @default("No comments")
   userId  Int
-  user    User   @relation(fields: [userId], references: [id])
+  user    User             @relation(fields: [userId], references: [id])
+  albums  photosInAlbums[]
+}
+
+model photosInAlbums {
+  Album   Album? @relation(fields: [albumId], references: [id])
   albumId Int
-  album   Album  @relation(fields: [albumId], references: [id])
+  Photo   Photo? @relation(fields: [photoId], references: [id])
+  photoId Int
+
+  @@id([albumId, photoId])
 }
