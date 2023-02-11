@@ -1,6 +1,8 @@
+// Import moduels
 import Debug from 'debug'
 import { Request, Response } from 'express'
-import {matchedData, validationResult} from "express-validator";
+import { matchedData, validationResult } from "express-validator";
+import bcrypt from 'bcrypt'
 
 const debug = Debug('prisma-photos:user_controller')
 
