@@ -9,13 +9,10 @@ const router = express.Router()
  */
 router.get('/', (req, res) => {
 	res.send({
-		message: "I AM API, BEEP BOOP",
+		message: "Machine intelligence is the last invention that humanity will ever need to make.",
 	})
 })
 
-/**
- * [EXAMPLE] /resource
- */
-// router.use('/resource', resource)
+router.post('/register', register) //Setup a middleware to check validaton and rules.
 
 export default router
