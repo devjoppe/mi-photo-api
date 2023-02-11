@@ -1,14 +1,16 @@
-// Import moduels
+// Import modules
 import Debug from 'debug'
-import { Request, Response } from 'express'
-import { matchedData, validationResult } from "express-validator";
+import {Request, Response} from 'express'
+import {matchedData, validationResult} from "express-validator";
 import bcrypt from 'bcrypt'
+
+// Import source
+import { registerUser } from "../services/user_service";
 
 const debug = Debug('prisma-photos:user_controller')
 
 // Register a new user
 export const register = async (req:Request, res:Response) => {
-    const { email, password } = req.body
 
     const validationErrors = validationResult(req)
     if(!validationErrors.isEmpty()) {
@@ -19,5 +21,22 @@ export const register = async (req:Request, res:Response) => {
     }
 
     const validatedData = matchedData(req)
-    console.log("Validated data: ", validatedData)
+
+    // Hashed password
+    validatedData.password = await bcrypt.hash(validatedData.password, Number(process.env.SALT_ROUNDS) || 10)
+
+    // Store the new user to the database
+    try {
+        const user = await registerUser({
+            first_name: validatedData.first_name,
+            last_name: validatedData.last_name,
+            email: validatedData.email,
+            password: validatedData.password
+        })
+    } catch(err){
+        return res.status(500).send({
+            status: "Error",
+            message: "User could not be created"
+        })
+    }
 }

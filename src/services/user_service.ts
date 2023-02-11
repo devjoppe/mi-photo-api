@@ -2,10 +2,15 @@
 import prisma from "../prisma";
 
 // Import source
-import { registerUser } from "../types/user";
+import { registerUser as userTypes } from "../types/user"
 
 // POST
 // Register new user
+export const registerUser = (userData:userTypes) => {
+    return prisma.user.create({
+        data: userData
+    })
+}
 
 // GET
 // Get user by email

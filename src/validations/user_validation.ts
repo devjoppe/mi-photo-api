@@ -11,7 +11,6 @@ export const registerUserValidation = [
     body('last_name').isString().bail().isLength({ min: 3 }),
     body('email').isEmail().bail().custom(async (value:string) => {
         const user = await getUserByEmail(value)
-
         if(user) {
             return Promise.reject("User already exist")
         }
