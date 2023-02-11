@@ -6,3 +6,24 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+// User
+model User {
+  id         Int    @id @default(autoincrement())
+  email      String @unique
+  password   String
+  first_name String
+  last_name  String
+}
+
+model Album {
+  id    Int    @id @default(autoincrement())
+  title String
+}
+
+model Photo {
+  id      Int    @id @default(autoincrement())
+  title   String
+  url     String
+  comment String @default("No comments")
+}
