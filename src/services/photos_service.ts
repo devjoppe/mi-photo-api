@@ -7,6 +7,12 @@ export const getAllPhotos = async (userId:number) => {
     return prisma.photo.findMany({
         where: {
             userId: userId
+        },
+        select: {
+            id: true,
+            title: true,
+            url: true,
+            comment: true
         }
     })
 }

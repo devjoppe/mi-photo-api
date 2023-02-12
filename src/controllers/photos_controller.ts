@@ -3,8 +3,8 @@ import {Request, Response} from "express"
 import prisma from "../prisma"
 
 // Import source
-import {getUserByEmail} from "../services/user_service";
 import {getAllPhotos} from "../services/photos_service";
+import {photo} from "../types/photos";
 
 // GET All photos
 export const index = async (req:Request, res:Response) => {
