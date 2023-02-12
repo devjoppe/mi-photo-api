@@ -9,10 +9,8 @@ import {getAllPhotos} from "../services/photos_service";
 // GET All photos
 export const index = async (req:Request, res:Response) => {
     try {
-        // Get user
-        const user = await getUserByEmail(req.token!.email)
         // Get all photos from user
-        const allPhotos = await getAllPhotos(user!.id)
+        const allPhotos = await getAllPhotos(req.token!.sub)
         res.status(200).send({
             status: "success",
             data: allPhotos

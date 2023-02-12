@@ -1,5 +1,5 @@
 import { User } from '@prisma/client'
-import {jwtPayload} from "../user";
+import {jwtPayload} from "./user";
 
 declare global {
     namespace Express {
