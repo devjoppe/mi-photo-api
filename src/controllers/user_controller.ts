@@ -7,7 +7,8 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 // Import source
-import {getUserByEmail, registerUser} from "../services/user_service";
+import { getUserByEmail, registerUser } from "../services/user_service";
+import { jwtPayload } from "../types/user";
 
 const debug = Debug('prisma-photos:user_controller')
 
@@ -62,7 +63,22 @@ export const loginUser = async (req:Request, res:Response) => {
     if(!existingUser) {
         return res.status(401).send({
             status: "fail",
-            message: "You need to login"
+            message: "Authorization failed"
         })
+    }
+
+    // Check hash
+    const hashCheck = await bcrypt.compare(password, existingUser.password)
+    if(!hashCheck) {
+        return res.status(401).send({
+            status: "fail",
+            message: "Authorization failed"
+        })
+    }
+
+    // JWT payload construction - Keeping it to a minimum
+    const jwtPayload:jwtPayload = {
+        sub: existingUser.id,
+        email: existingUser.email,
     }
 }

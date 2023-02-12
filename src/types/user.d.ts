@@ -6,3 +6,10 @@ export type registerUser = {
     first_name: string,
     last_name: string
 }
+
+export type jwtPayload = {
+    sub: number,
+    email: string,
+    iat?: number,
+    exp?: number
+}
