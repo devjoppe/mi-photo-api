@@ -12,7 +12,7 @@ export const registerUserValidation = [
     body('email').isEmail().bail().custom(async (value:string) => {
         const user = await getUserByEmail(value)
         if(user) {
-            return Promise.reject("User already exist")
+            return Promise.reject("Could not create user")
         }
     }),
     body('password').isString().bail().isLength({ min: 6 })
