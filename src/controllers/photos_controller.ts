@@ -1,10 +1,10 @@
 // Import modules
 import {Request, Response} from "express"
-import prisma from "../prisma"
+import {matchedData, validationResult} from "express-validator";
 
 // Import source
-import {getAllPhotos, getPhoto} from "../services/photos_service";
-import {photo} from "../types/photos";
+import {getAllPhotos, getPhoto, createPhoto} from "../services/photos_service";
+import {photo} from "../types/photos"
 
 // GET All photos
 export const index = async (req:Request, res:Response) => {
@@ -54,4 +54,26 @@ export const show = async (req:Request, res:Response) => {
 // POST new user photo
 export const store = async (req:Request, res:Response) => {
 
+    const validationErrors = validationResult(req)
+    if(!validationErrors.isEmpty()) {
+        return res.status(400).send({
+            status: "fail",
+            data: validationErrors.array()
+        })
+    }
+
+    const validatedData = matchedData(req)
+
+    try {
+        const newPhoto = await createPhoto({
+            title: validatedData.title,
+            url: validatedData.url,
+            comment: validatedData.comment,
+        }, Number(req.token!.sub))
+    } catch (err){
+        return res.status(401).send({
+            status: "fail",
+            message: "Could not create new photo"
+        })
+    }
 }

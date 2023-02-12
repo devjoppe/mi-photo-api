@@ -1,5 +1,6 @@
 // Import modules
 import prisma from "../prisma";
+import {photo} from "../types/photos";
 
 // GET all photos for a user
 export const getAllPhotos = async (userId:number) => {
@@ -21,6 +22,18 @@ export const getPhoto = async (id:number) => {
     return prisma.photo.findUnique({
         where: {
             id: id
+        }
+    })
+}
+
+// POST Photo
+export const createPhoto = async (photoData:photo, userId:number) => {
+    return prisma.photo.create({
+        data: {
+            title: photoData.title,
+            url: photoData.url,
+            comment: photoData.comment,
+            userId: userId
         }
     })
 }

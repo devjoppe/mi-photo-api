@@ -1,7 +1,6 @@
 // Validation of user
 // Import modules
 import { body } from 'express-validator'
-import { validationResult } from "express-validator";
 
 // Import source
 import { getUserByEmail } from "../services/user_service";
