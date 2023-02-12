@@ -4,9 +4,10 @@ import Debug from 'debug'
 import {Request, Response} from 'express'
 import {matchedData, validationResult} from "express-validator";
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 // Import source
-import { registerUser } from "../services/user_service";
+import {getUserByEmail, registerUser} from "../services/user_service";
 
 const debug = Debug('prisma-photos:user_controller')
 
@@ -53,3 +54,15 @@ export const register = async (req:Request, res:Response) => {
 }
 
 // Login user
+export const loginUser = async (req:Request, res:Response) => {
+    const { email, password } = req.body
+
+    // Find and check existing user
+    const existingUser = await getUserByEmail(email)
+    if(!existingUser) {
+        return res.status(401).send({
+            status: "fail",
+            message: "You need to login"
+        })
+    }
+}
