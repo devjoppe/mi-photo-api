@@ -1,11 +1,14 @@
 // Import modules
+import Debug from 'debug'
 import {NextFunction, Request, Response} from 'express'
 import jwt from 'jsonwebtoken'
 
 // Import source
 import {jwtPayload} from "../types/user";
 
-export const validateToken = (req:Request, res:Response, next:NextFunction) => {
+const debug = Debug('prisma-photos:jwt')
+
+export const validateToken = (req: Request, res: Response, next: NextFunction) => {
     // Check auth header -> Important
     if(!req.headers.authorization) {
         return res.status(401).send({
@@ -27,6 +30,7 @@ export const validateToken = (req:Request, res:Response, next:NextFunction) => {
     // Verify token
     try {
         req.token = (jwt.verify(token, process.env.ACCESS_TOKEN_PASS || "") as unknown) as jwtPayload
+        debug(req.token)
     } catch (err) {
         return res.status(401).send({
             status: "fail",
