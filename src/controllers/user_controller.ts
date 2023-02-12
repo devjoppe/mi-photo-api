@@ -76,9 +76,32 @@ export const loginUser = async (req:Request, res:Response) => {
         })
     }
 
-    // JWT payload construction - Keeping it to a minimum
+    // JWT: payload construction - Keeping it to a minimum
     const jwtPayload:jwtPayload = {
         sub: existingUser.id,
         email: existingUser.email,
     }
+    // JWT: check access token -> Important validation
+    if(!process.env.ACCESS_TOKEN_PASS) {
+        return res.status(500).send({
+            status: "error",
+            message: "No access token available"
+        })
+    }
+    // JWT: Sign
+    const access_token = jwt.sign(jwtPayload, process.env.ACCESS_TOKEN_PASS, {
+        expiresIn: process.env.ACCESS_TOKEN_EXP || '2h'
+    })
+
+    // ---
+    // Refresh token
+    // ---
+
+    // JWT: Login response
+    res.status(200).send({
+        status: "success",
+        data: {
+            access_token
+        }
+    })
 }

@@ -1,9 +1,8 @@
 // Import modules
 import express from "express"
-import resource from './_router'
 
 // Import source
-import { register } from "../controllers/user_controller";
+import { register, loginUser } from "../controllers/user_controller";
 import { registerUserValidation } from "../validations/user_validation";
 
 // instantiate a new router
@@ -18,6 +17,10 @@ router.get('/', (req, res) => {
 	})
 })
 
+// POST - login
+router.post('/login', loginUser)
+
+// POST - register
 router.post('/register', registerUserValidation, register)
 
 export default router
