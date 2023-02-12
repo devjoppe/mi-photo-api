@@ -5,3 +5,8 @@ import express from "express";
 
 
 const router = express.Router()
+
+// GET photos
+router.get('/', index)
+
+export default router
