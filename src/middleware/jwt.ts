@@ -30,7 +30,7 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
     // Verify token
     try {
         req.token = (jwt.verify(token, process.env.ACCESS_TOKEN_PASS || "") as unknown) as jwtPayload
-        debug(req.token)
+        debug(req.token) // <- Delete this one when I am done
     } catch (err) {
         return res.status(401).send({
             status: "fail",
