@@ -37,7 +37,7 @@ export const register = async (req:Request, res:Response) => {
             password: validatedData.password
         })
 
-        res.status(200).send({
+        res.status(201).send({
             status: "success",
             data: {
                 "email": user.email,

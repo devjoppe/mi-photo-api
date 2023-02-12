@@ -50,3 +50,8 @@ export const show = async (req:Request, res:Response) => {
         })
     }
 }
+
+// POST new user photo
+export const store = async (req:Request, res:Response) => {
+
+}
