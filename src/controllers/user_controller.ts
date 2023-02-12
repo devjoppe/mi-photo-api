@@ -81,7 +81,7 @@ export const loginUser = async (req:Request, res:Response) => {
         sub: existingUser.id,
         email: existingUser.email,
     }
-    // JWT: check access token -> Important validation
+    // JWT: check if access token is available -> Important validation
     if(!process.env.ACCESS_TOKEN_PASS) {
         return res.status(500).send({
             status: "error",
@@ -97,7 +97,7 @@ export const loginUser = async (req:Request, res:Response) => {
     // Refresh token
     // ---
 
-    // JWT: Login response
+    // JWT: Login response with jwt-token
     res.status(200).send({
         status: "success",
         data: {
