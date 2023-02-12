@@ -1,5 +1,5 @@
-// Import moduels
-import { Request, Response, NextFunction } from 'express'
+// Import modules
+import {NextFunction, Request, Response} from 'express'
 import jwt from 'jsonwebtoken'
 
 // Import source
@@ -14,9 +14,25 @@ export const validateToken = (req:Request, res:Response, next:NextFunction) => {
         })
     }
     // Split header
-
+    const [authSchema, token] = req.headers.authorization.split(" ")
 
     // Check auth schema
+    if(authSchema.toLowerCase() !== "bearer") {
+        return res.status(401).send({
+            status: "fail",
+            message: "Authorization failed"
+        })
+    }
 
-    // Verify
+    // Verify token
+    try {
+        req.token = (jwt.verify(token, process.env.ACCESS_TOKEN_PASS || "") as unknown) as jwtPayload
+    } catch (err) {
+        return res.status(401).send({
+            status: "fail",
+            message: "Authorization failed"
+        })
+    }
+    // Go to next route
+    next()
 }
