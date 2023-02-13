@@ -4,7 +4,6 @@ import {matchedData, validationResult} from "express-validator";
 
 // Import source
 import {getAllPhotos, getPhoto, createPhoto} from "../services/photos_service";
-import {photo} from "../types/photos"
 
 // GET All photos
 export const index = async (req:Request, res:Response) => {
@@ -70,6 +69,17 @@ export const store = async (req:Request, res:Response) => {
             url: validatedData.url,
             comment: validatedData.comment,
         }, Number(req.token!.sub))
+
+        res.status(201).send({
+            status: "success",
+            data: {
+                "title": newPhoto.title,
+                "url": newPhoto.url,
+                "comment": newPhoto.comment,
+                "user_id": newPhoto.userId,
+                "id": newPhoto.id
+            }
+        })
     } catch (err){
         return res.status(401).send({
             status: "fail",

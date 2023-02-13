@@ -17,4 +17,7 @@ router.get('/:id', validateToken, show)
 // POST Photo
 router.post('/', createPhotoValidation, validateToken, store)
 
+// PATCH Photo
+
+
 export default router
