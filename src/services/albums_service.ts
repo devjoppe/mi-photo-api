@@ -9,3 +9,15 @@ export const getAllAlbums = async (userId:number) => {
         }
     })
 }
+
+// GET single album
+export const getSingleAlbum = async (albumId:number) => {
+    return prisma.album.findUnique({
+        where: {
+            id: albumId
+        },
+        include: {
+            photos: true
+        }
+    })
+}
