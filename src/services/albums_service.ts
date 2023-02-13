@@ -17,7 +17,11 @@ export const getSingleAlbum = async (albumId:number) => {
             id: albumId
         },
         include: {
-            photos: true
+          photos: {
+              include: {
+                  Photo: true,
+              }
+          }
         }
     })
 }
