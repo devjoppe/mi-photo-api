@@ -25,15 +25,19 @@ export const index = async (req:Request, res:Response) => {
 export const show = async (req:Request, res:Response) => {
     try {
         const singleAlbum = await getSingleAlbum(Number(req.params.id))
-        /* if(singleAlbum!.userId !== req.token!.sub) {
+        if(singleAlbum!.userId !== req.token!.sub) {
             return res.status(401).send({
                 status: "fail",
                 message: "No permission to access this album"
             })
-        } */
+        }
         res.status(200).send({
             status: "success",
-            data: singleAlbum
+            data: {
+                id: singleAlbum!.id,
+                title: singleAlbum!.title,
+                photos: singleAlbum!.photos.map(rel => { {return rel.Photo}})
+            }
         })
     } catch(err) {
         return res.status(401).send({

@@ -19,7 +19,15 @@ export const getSingleAlbum = async (albumId:number) => {
         include: {
           photos: {
               include: {
-                  Photo: true,
+                  Photo: {
+                    select: {
+                        id: true,
+                        title: true,
+                        url: true,
+                        comment: true,
+                        userId: true
+                    }
+                  }
               }
           }
         }
