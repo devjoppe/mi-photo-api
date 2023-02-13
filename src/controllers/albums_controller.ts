@@ -1,10 +1,9 @@
 // Import modules
 import {Request, Response} from "express"
-// import {matchedData, validationResult} from "express-validator";
+import {matchedData, validationResult} from "express-validator";
 
 // Import source
-import {getAllAlbums, getSingleAlbum, createAlbum} from "../services/albums_service";
-import {matchedData, validationResult} from "express-validator";
+import {getAllAlbums, getSingleAlbum, createAlbum, updateSingleAlbum} from "../services/albums_service";
 
 // GET All Albums
 export const index = async (req:Request, res:Response) => {
@@ -74,6 +73,43 @@ export const store = async (req:Request, res:Response) => {
         return res.status(401).send({
             status: "fail",
             message: "Could not create new photo"
+        })
+    }
+}
+
+// PATCH album
+export const update = async (req:Request, res:Response) => {
+
+    const validationErrors = validationResult(req)
+    if(!validationErrors.isEmpty()) {
+        return res.status(400).send({
+            status: "fail",
+            data: validationErrors.array()
+        })
+    }
+
+    const validatedData = matchedData(req)
+    // Check if Album exists
+    const validAlbum = await getSingleAlbum(Number(req.params.id))
+    if(!validAlbum || validAlbum.userId !== Number(req.token!.sub)) {
+        return res.status(500).send({
+            status: "error",
+            message: "Could not get the Album"
+        })
+    }
+    try {
+        const updateAlbum = await updateSingleAlbum({
+            title: validatedData.title,
+            userId: Number(req.token!.sub)
+        }, Number(req.params.id))
+        res.status(201).send({
+            status: "success",
+            data: updateAlbum
+        })
+    } catch (err) {
+        return res.status(401).send({
+            status: "fail",
+            message: "Could not update album"
         })
     }
 }

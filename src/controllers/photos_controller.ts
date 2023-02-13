@@ -125,7 +125,8 @@ export const update = async (req:Request, res:Response) => {
         // Returns error if not users photo
         return res.status(401).send({
             status: "fail",
-            message: "User not authorized to update this photo" })
+            message: "User not authorized to update this photo"
+        })
     }
 }
 

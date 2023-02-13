@@ -46,3 +46,15 @@ export const createAlbum = async (albumData:album) => {
         }
     })
 }
+
+// PATCH Album
+export const updateSingleAlbum = async (albumData:album, albumId:number) => {
+    return prisma.album.update({
+        where: {
+            id: albumId
+        },
+        data: {
+            title: albumData.title
+        }
+    })
+}
