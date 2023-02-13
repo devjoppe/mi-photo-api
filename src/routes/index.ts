@@ -2,7 +2,7 @@
 import express from "express"
 
 // Import source
-import { register, loginUser } from "../controllers/user_controller";
+import { register, loginUser, refresh } from "../controllers/user_controller";
 import { registerUserValidation } from "../validations/user_validation";
 import photos from './photos'
 

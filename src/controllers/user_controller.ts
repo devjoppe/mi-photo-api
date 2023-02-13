@@ -92,15 +92,23 @@ export const loginUser = async (req:Request, res:Response) => {
         expiresIn: process.env.ACCESS_TOKEN_EXP || '2h'
     })
 
-    // ---
     // Refresh token
-    // ---
+    if(!process.env.REFRESH_TOKEN_PASS) {
+        return res.status(500).send({
+            status: "error",
+            message: "No access token available"
+        })
+    }
+    const refresh_token = jwt.sign(jwtPayload, process.env.REFRESH_TOKEN_PASS, {
+        expiresIn: process.env.REFRESH_TOKEN_EXP || "1d"
+    })
 
     // JWT: Login response with jwt-token
     res.status(200).send({
         status: "success",
         data: {
-            access_token
+            access_token,
+            refresh_token
         }
     })
 }
