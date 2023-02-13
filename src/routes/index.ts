@@ -24,6 +24,9 @@ router.post('/login', loginUser)
 // POST - register
 router.post('/register', registerUserValidation, register)
 
+// POST - Refresh token
+router.post('/refresh', refresh)
+
 // Photos
 router.use('/photos', photos)
 

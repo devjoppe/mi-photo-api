@@ -104,3 +104,8 @@ export const loginUser = async (req:Request, res:Response) => {
         }
     })
 }
+
+// Refresh token
+export const refresh = (req:Request, res:Response) => {
+
+}
