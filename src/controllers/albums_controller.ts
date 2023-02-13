@@ -3,7 +3,14 @@ import {Request, Response} from "express"
 import {matchedData, validationResult} from "express-validator";
 
 // Import source
-import {getAllAlbums, getSingleAlbum, createAlbum, updateSingleAlbum} from "../services/albums_service";
+import {
+    getAllAlbums,
+    getSingleAlbum,
+    createAlbum,
+    updateSingleAlbum,
+    connectPhotoAlbum
+} from "../services/albums_service";
+import {getPhoto} from "../services/photos_service";
 
 // GET All Albums
 export const index = async (req:Request, res:Response) => {
@@ -115,7 +122,7 @@ export const update = async (req:Request, res:Response) => {
 }
 
 // POST photos to album
-export const storePhotos = (req:Request, res:Response) => {
+export const storePhotos = async (req:Request, res:Response) => {
 
     const validationErrors = validationResult(req)
     if(!validationErrors.isEmpty()) {
@@ -128,6 +135,37 @@ export const storePhotos = (req:Request, res:Response) => {
     const validatedData = matchedData(req)
 
     // Check if albums exists and is connected to the user
+    const validAlbum = await getSingleAlbum(Number(req.params.id))
+    if(!validAlbum || validAlbum.userId !== Number(req.token!.sub)) {
+        return res.status(401).send({
+            status: "error",
+            message: "You are not authorized to add this photo"
+        })
+    }
+    // Check if photo is on the user
+    const validPhoto = await getPhoto(validatedData.photo_id)
+    if(!validPhoto || validPhoto!.userId !== Number(req.token!.sub)) {
+        return res.status(500).send({
+            status: "Error",
+            message: "You are not Authorized or the photo could not be found"
+        })
+    }
+    // Check if Photo already is in album
 
-    // Send added photos to service
+    // Send added photos to the photo_to_album service
+    try {
+        connectPhotoAlbum({
+            photoId: validatedData.photo_id,
+            albumId: Number(req.params.id)
+        })
+        res.status(200).send({
+            status: "success",
+            data: null
+        })
+    } catch (err) {
+        return res.status(401).send({
+            status: "fail",
+            message: "Could not add photo to album"
+        })
+    }
 }

@@ -142,7 +142,7 @@ export const destroy = async (req:Request, res:Response) => {
     }
     if(validPhoto!.userId == req.token!.sub) {
         try {
-            const deletedPhotos = await deletePhoto(Number(validPhoto!.id))
+            const deletedPhotos = await deletePhoto(Number(validPhoto!.id)) // TODO: Refactor this one
             res.status(200).send({
                 status: "success",
                 data: null

@@ -2,7 +2,7 @@
 import prisma from "../prisma";
 
 // Import source
-import {album} from "../types/albums";
+import {album, photoAlbum} from "../types/albums";
 
 // GET all Albums
 export const getAllAlbums = async (userId:number) => {
@@ -60,3 +60,20 @@ export const updateSingleAlbum = async (albumData:album, albumId:number) => {
 }
 
 // POST photos to album
+export const connectPhotoAlbum = async (photoAlbum:photoAlbum) => {
+    return prisma.photosInAlbums.createMany({
+        data: {
+            albumId: photoAlbum.albumId,
+            photoId: photoAlbum.photoId
+        }
+    })
+}
+
+// GET Photo in Albums
+export const getPhotosToAlbums = async (albumId:number) => {
+    return prisma.photosInAlbums.findMany({
+        where: {
+            albumId: albumId
+        }
+    })
+}
