@@ -1,5 +1,4 @@
 // Import modules
-import prisma from "../prisma";
 import Debug from 'debug'
 import {Request, Response} from 'express'
 import {matchedData, validationResult} from "express-validator";
