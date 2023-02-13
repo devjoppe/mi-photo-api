@@ -70,9 +70,10 @@ export const connectPhotoAlbum = async (photoAlbum:photoAlbum) => {
 }
 
 // GET Photo in Albums
-export const getPhotosToAlbums = async (albumId:number) => {
+export const getPhotosToAlbums = async (photoId:number, albumId:number) => {
     return prisma.photosInAlbums.findMany({
         where: {
+            photoId: photoId,
             albumId: albumId
         }
     })

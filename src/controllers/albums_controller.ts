@@ -8,7 +8,8 @@ import {
     getSingleAlbum,
     createAlbum,
     updateSingleAlbum,
-    connectPhotoAlbum
+    connectPhotoAlbum,
+    getPhotosToAlbums
 } from "../services/albums_service";
 import {getPhoto} from "../services/photos_service";
 
@@ -151,7 +152,13 @@ export const storePhotos = async (req:Request, res:Response) => {
         })
     }
     // Check if Photo already is in album
-
+    const validPhotoAlbum = await getPhotosToAlbums(validatedData.photo_id, Number(req.params.id))
+    if(validPhotoAlbum) {
+        return res.status(401).send({
+            status: "fail",
+            message: "Photo already exists in album "
+        })
+    }
     // Send added photos to the photo_to_album service
     try {
         connectPhotoAlbum({
