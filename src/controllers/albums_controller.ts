@@ -4,6 +4,7 @@ import {Request, Response} from "express"
 
 // Import source
 import {getAllAlbums, getSingleAlbum} from "../services/albums_service";
+import {validationResult} from "express-validator";
 
 // GET All Albums
 export const index = async (req:Request, res:Response) => {
@@ -45,4 +46,17 @@ export const show = async (req:Request, res:Response) => {
             message: "Could not get user album"
         })
     }
+}
+
+// POST Album
+export const store = (req:Request, res:Response) => {
+    // Validating request body
+    const validationErrors = validationResult(req)
+    if(!validationErrors.isEmpty()) {
+        return res.status(400).send({
+            status: "fail",
+            data: validationErrors.array()
+        })
+    }
+
 }
