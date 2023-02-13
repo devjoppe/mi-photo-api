@@ -113,3 +113,21 @@ export const update = async (req:Request, res:Response) => {
         })
     }
 }
+
+// POST photos to album
+export const storePhotos = (req:Request, res:Response) => {
+
+    const validationErrors = validationResult(req)
+    if(!validationErrors.isEmpty()) {
+        return res.status(400).send({
+            status: "fail",
+            data: validationErrors.array()
+        })
+    }
+
+    const validatedData = matchedData(req)
+
+    // Check if albums exists and is connected to the user
+
+    // Send added photos to service
+}

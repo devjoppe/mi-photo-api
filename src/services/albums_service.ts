@@ -58,3 +58,5 @@ export const updateSingleAlbum = async (albumData:album, albumId:number) => {
         }
     })
 }
+
+// POST photos to album
