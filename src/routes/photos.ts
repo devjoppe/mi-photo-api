@@ -3,8 +3,8 @@ import express from "express";
 
 // Import source
 import {validateToken} from "../middleware/jwt";
-import {index, show, store} from '../controllers/photos_controller'
-import {createPhotoValidation} from "../validations/photo_validation";
+import {index, show, store, update} from '../controllers/photos_controller'
+import {photoValidation} from "../validations/photo_validation";
 
 const router = express.Router()
 
@@ -15,9 +15,9 @@ router.get('/', validateToken, index)
 router.get('/:id', validateToken, show)
 
 // POST Photo
-router.post('/', createPhotoValidation, validateToken, store)
+router.post('/', photoValidation, validateToken, store)
 
 // PATCH Photo
-
+router.patch('/:id', validateToken, update)
 
 export default router

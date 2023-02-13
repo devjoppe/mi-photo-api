@@ -87,3 +87,9 @@ export const store = async (req:Request, res:Response) => {
         })
     }
 }
+
+// PATCH existing photo
+
+export const update = () => {
+
+}
