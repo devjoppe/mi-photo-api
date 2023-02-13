@@ -15,6 +15,6 @@ router.get('/', validateToken, index)
 router.get('/:id', validateToken, show)
 
 // Post album
-router.get('/', albumValidation, validateToken, store)
+router.post('/', albumValidation, validateToken, store)
 
 export default router

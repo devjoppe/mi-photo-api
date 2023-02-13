@@ -3,8 +3,8 @@ import {Request, Response} from "express"
 // import {matchedData, validationResult} from "express-validator";
 
 // Import source
-import {getAllAlbums, getSingleAlbum} from "../services/albums_service";
-import {validationResult} from "express-validator";
+import {getAllAlbums, getSingleAlbum, createAlbum} from "../services/albums_service";
+import {matchedData, validationResult} from "express-validator";
 
 // GET All Albums
 export const index = async (req:Request, res:Response) => {
@@ -49,7 +49,7 @@ export const show = async (req:Request, res:Response) => {
 }
 
 // POST Album
-export const store = (req:Request, res:Response) => {
+export const store = async (req:Request, res:Response) => {
     // Validating request body
     const validationErrors = validationResult(req)
     if(!validationErrors.isEmpty()) {
@@ -58,5 +58,22 @@ export const store = (req:Request, res:Response) => {
             data: validationErrors.array()
         })
     }
+    const validatedData = matchedData(req)
 
+    try {
+        const newAlbum = await createAlbum({
+            title: validatedData.title,
+            userId: Number(req.token!.sub)
+        })
+
+        res.status(200).send({
+            status: "success",
+            data: newAlbum
+        })
+    } catch (err) {
+        return res.status(401).send({
+            status: "fail",
+            message: "Could not create new photo"
+        })
+    }
 }
