@@ -5,6 +5,7 @@ import express from "express"
 import { register, loginUser, refresh } from "../controllers/user_controller";
 import { registerUserValidation } from "../validations/user_validation";
 import photos from './photos'
+import albums from './albums'
 
 // instantiate a new router
 const router = express.Router()
@@ -29,5 +30,8 @@ router.post('/refresh', refresh)
 
 // Photos
 router.use('/photos', photos)
+
+// Albums
+router.use('/albums', albums)
 
 export default router

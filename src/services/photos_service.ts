@@ -1,5 +1,7 @@
 // Import modules
 import prisma from "../prisma";
+
+// Import source
 import {photo} from "../types/photos";
 
 // GET all photos for a user
