@@ -153,7 +153,8 @@ export const storePhotos = async (req:Request, res:Response) => {
     }
     // Check if Photo already is in album
     const validPhotoAlbum = await getPhotosToAlbums(validatedData.photo_id, Number(req.params.id))
-    if(validPhotoAlbum) {
+    console.log("Check if there is something: ", validPhotoAlbum)
+    if(validPhotoAlbum.length > 0) {
         return res.status(401).send({
             status: "fail",
             message: "Photo already exists in album "
