@@ -3,7 +3,7 @@ import Debug from 'debug'
 import {Request, Response} from 'express'
 import {matchedData, validationResult} from "express-validator";
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import jwt, {JwtPayload} from 'jsonwebtoken'
 
 // Import source
 import { getUserByEmail, registerUser } from "../services/user_service";
@@ -124,5 +124,33 @@ export const refresh = (req:Request, res:Response) => {
             message: "Authorization failed"
         })
     }
-    // Verify and get new token
+    // Verify and get refresh payload
+    try {
+        const payLoad = (jwt.verify(token, process.env.REFRESH_TOKEN_PASS || "") as unknown) as JwtPayload
+        //Remove iat and exp
+        delete payLoad.iat
+        delete payLoad.exp
+
+        // New token
+        if(!process.env.ACCESS_TOKEN_PASS) {
+            return res.status(500).send({
+                status: "error",
+                message: "No access token secret defined",
+            })
+        }
+        const access_token = jwt.sign(payLoad, process.env.ACCESS_TOKEN_PASS, {
+            expiresIn: process.env.ACCESS_TOKEN_EXP || "2h"
+        })
+        res.status(200).send({
+            status: "success",
+            data: {
+                access_token
+            }
+        })
+    } catch (err) {
+        return res.status(401).send({
+            status: "fail",
+            data: "Authorization required",
+        })
+    }
 }
