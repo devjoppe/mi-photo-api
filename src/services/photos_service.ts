@@ -37,3 +37,17 @@ export const createPhoto = async (photoData:photo, userId:number) => {
         }
     })
 }
+
+// PATCH Photo
+export const updatePhoto = async (photoData:photo, photoId:number) => {
+    return prisma.photo.update({
+        where: {
+            id: photoId,
+        },
+        data: {
+            title: photoData.title,
+            url: photoData.url,
+            comment: photoData.comment
+        }
+    })
+}

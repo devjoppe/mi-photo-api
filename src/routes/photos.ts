@@ -18,6 +18,6 @@ router.get('/:id', validateToken, show)
 router.post('/', photoValidation, validateToken, store)
 
 // PATCH Photo
-router.patch('/:id', validateToken, update)
+router.patch('/:id', photoValidation, validateToken, update)
 
 export default router

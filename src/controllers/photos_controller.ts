@@ -3,7 +3,7 @@ import {Request, Response} from "express"
 import {matchedData, validationResult} from "express-validator";
 
 // Import source
-import {getAllPhotos, getPhoto, createPhoto} from "../services/photos_service";
+import {getAllPhotos, getPhoto, createPhoto, updatePhoto} from "../services/photos_service";
 
 // GET All photos
 export const index = async (req:Request, res:Response) => {
@@ -90,6 +90,41 @@ export const store = async (req:Request, res:Response) => {
 
 // PATCH existing photo
 
-export const update = () => {
+export const update = async (req:Request, res:Response) => {
 
+    const validationErrors = validationResult(req)
+    if(!validationErrors.isEmpty()) {
+        return res.status(400).send({
+            status: "fail",
+            data: validationErrors.array()
+        })
+    }
+
+    const validatedData = matchedData(req)
+
+    // Check valid photo
+    const validPhoto = await getPhoto(Number(req.params.id))
+    if(validPhoto!.userId == req.token!.sub) {
+        try {
+            const patchPhoto = await updatePhoto({
+                title: validatedData.title,
+                url: validatedData.url,
+                comment: validatedData.comment,
+            },Number(validPhoto!.id))
+
+            res.status(200).send({
+                status: "success",
+                data: patchPhoto
+            })
+        } catch (err) {
+            return res.status(500).send({
+                status: "error",
+                message: "Could not update photo in database" })
+        }
+    } else {
+        // Returns error if not users photo
+        return res.status(500).send({
+            status: "error",
+            message: "User not authorized to update this photo" })
+    }
 }
