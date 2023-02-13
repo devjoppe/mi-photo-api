@@ -103,6 +103,7 @@ export const update = async (req:Request, res:Response) => {
 
     // Check valid photo
     const validPhoto = await getPhoto(Number(req.params.id))
+    //TODO: Come back and check this. If you try to update an ID that does not exists?
     if(validPhoto!.userId == req.token!.sub) {
         try {
             const patchPhoto = await updatePhoto({
@@ -123,7 +124,7 @@ export const update = async (req:Request, res:Response) => {
     } else {
         // Returns error if not users photo
         return res.status(401).send({
-            status: "error",
+            status: "fail",
             message: "User not authorized to update this photo" })
     }
 }
@@ -132,16 +133,24 @@ export const update = async (req:Request, res:Response) => {
 export const destroy = async (req:Request, res:Response) => {
     // Check valid photo
     const validPhoto = await getPhoto(Number(req.params.id))
+    if(!validPhoto) {
+        return res.status(500).send({
+            status: "error",
+            message: "Photo does not exists"
+        })
+    }
     if(validPhoto!.userId == req.token!.sub) {
         try {
-
-        } catch(err) {
-
+            const deletedPhotos = await deletePhoto(Number(validPhoto!.id))
+            res.status(200).send({
+                status: "success",
+                data: null
+            })
+        } catch (err) {
+            return res.status(500).send({
+                status: "error",
+                message: "Could not remove photo"
+            })
         }
-    } else {
-        // Returns error if not users photo
-        return res.status(401).send({
-            status: "error",
-            message: "User not authorized to update this photo" })
     }
 }
