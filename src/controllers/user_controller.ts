@@ -107,5 +107,22 @@ export const loginUser = async (req:Request, res:Response) => {
 
 // Refresh token
 export const refresh = (req:Request, res:Response) => {
+    // Check auth header -> Important
+    if(!req.headers.authorization) {
+        return res.status(401).send({
+            status: "fail",
+            message: "Authorization failed"
+        })
+    }
 
+    const [authSchema, token] = req.headers.authorization.split(" ")
+
+    // Check schema
+    if(authSchema.toLowerCase() !== "bearer") {
+        return res.status(401).send({
+            status: "fail",
+            message: "Authorization failed"
+        })
+    }
+    // Verify and get new token
 }
