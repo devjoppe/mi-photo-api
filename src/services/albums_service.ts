@@ -2,7 +2,7 @@
 import prisma from "../prisma";
 
 // Import source
-import {album, photoAlbum} from "../types/albums";
+import {album} from "../types/albums";
 
 // GET all Albums
 export const getAllAlbums = async (userId:number) => {
@@ -20,19 +20,7 @@ export const getSingleAlbum = async (albumId:number) => {
             id: albumId
         },
         include: {
-          photos: {
-              include: {
-                  Photo: {
-                    select: {
-                        id: true,
-                        title: true,
-                        url: true,
-                        comment: true,
-                        userId: true // Look at this awesome V... Arrow-coding FTW!
-                    }
-                  }
-              }
-          }
+          photos: true //TODO: Go back and rewrite this so the Output is correct
         }
     })
 }
@@ -61,5 +49,13 @@ export const updateSingleAlbum = async (albumData:album, albumId:number) => {
 
 // POST photos to album
 export const connectPhotoAlbum = async (photoIds:any, albumIds:number) => {
-
+    console.log("WHAT THE FUCK: ", photoIds)
+    return prisma.album.update({
+        where: { id: albumIds },
+        data: {
+            photos: {
+                connect: photoIds,
+            },
+        },
+    })
 }
