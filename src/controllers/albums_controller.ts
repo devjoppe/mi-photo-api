@@ -135,6 +135,8 @@ export const storePhotos = async (req:Request, res:Response) => {
 
     const validatedData = matchedData(req)
 
+    console.log("Check if there is something: ", validatedData.photo_id)
+
     // Check if albums exists and is connected to the user
     const validAlbum = await getSingleAlbum(Number(req.params.id))
     if(!validAlbum || validAlbum.userId !== Number(req.token!.sub)) {
@@ -144,33 +146,41 @@ export const storePhotos = async (req:Request, res:Response) => {
         })
     }
     // Check if photo is on the user
-    const validPhoto = await getPhoto(validatedData.photo_id)
-    if(!validPhoto || validPhoto!.userId !== Number(req.token!.sub)) {
-        return res.status(500).send({
-            status: "Error",
-            message: "You are not Authorized or the photo could not be found"
-        })
+    const checkPhoto = async (photoId:number) => {
+        const validPhoto = await getPhoto(photoId)
+        if(!validPhoto || validPhoto!.userId !== Number(req.token!.sub)) {
+            return res.status(500).send({
+                status: "Error",
+                message: "You are not Authorized or the photo could not be found"
+            })
+        }
     }
+    validatedData.photo_id.forEach((item:number) => {
+        checkPhoto(item)
+    })
     // Check if Photo already is in album
-    const validPhotoAlbum = await getPhotosToAlbums(validatedData.photo_id, Number(req.params.id))
+    /* const validPhotoAlbum = await getPhotosToAlbums(validatedData.photo_id, Number(req.params.id))
     console.log("Check if there is something: ", validPhotoAlbum)
     if(validPhotoAlbum.length > 0) {
         return res.status(401).send({
             status: "fail",
             message: "Photo already exists in album "
         })
-    }
+    } */
     // Send added photos to the photo_to_album service
+
+    const photoIds = validatedData.photo_id.map((item:number) => {
+        return {id: item}
+    })
+
     try {
-        connectPhotoAlbum({
-            photoId: validatedData.photo_id,
-            albumId: Number(req.params.id)
-        })
+        await connectPhotoAlbum(photoIds, Number(req.params.id))
         res.status(200).send({
             status: "success",
             data: null
         })
     } catch (err) {
+        console.log("Error: ", err)
         return res.status(401).send({
             status: "fail",
             message: "Could not add photo to album"

@@ -60,21 +60,6 @@ export const updateSingleAlbum = async (albumData:album, albumId:number) => {
 }
 
 // POST photos to album
-export const connectPhotoAlbum = async (photoAlbum:photoAlbum) => {
-    return prisma.photosInAlbums.createMany({
-        data: {
-            albumId: photoAlbum.albumId,
-            photoId: photoAlbum.photoId
-        }
-    })
-}
+export const connectPhotoAlbum = async (photoIds:any, albumIds:number) => {
 
-// GET Photo in Albums
-export const getPhotosToAlbums = async (photoId:number, albumId:number) => {
-    return prisma.photosInAlbums.findMany({
-        where: {
-            photoId: photoId,
-            albumId: albumId
-        }
-    })
 }

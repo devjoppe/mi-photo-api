@@ -6,6 +6,5 @@ export type album = {
 }
 
 export type photoAlbum = {
-    photoId: number, []
-    albumId: number
+    photoId: [], number
 }
