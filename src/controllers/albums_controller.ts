@@ -1,6 +1,7 @@
 // Import modules
 import {Request, Response} from "express"
 import {matchedData, validationResult} from "express-validator";
+import Debug from 'debug'
 
 // Import source
 import {
@@ -10,7 +11,9 @@ import {
     updateSingleAlbum,
     connectPhotoAlbum,
 } from "../services/albums_service";
-import {getPhoto} from "../services/photos_service";
+import {getAllPhotosById} from "../services/photos_service";
+
+const debug = Debug('prisma-photos:album_controller')
 
 // GET All Albums
 export const index = async (req:Request, res:Response) => {
@@ -125,6 +128,7 @@ export const update = async (req:Request, res:Response) => {
 // POST photos to album
 export const storePhotos = async (req:Request, res:Response) => {
 
+    // Validation of data
     const validationErrors = validationResult(req)
     if(!validationErrors.isEmpty()) {
         return res.status(400).send({
@@ -135,53 +139,69 @@ export const storePhotos = async (req:Request, res:Response) => {
 
     const validatedData = matchedData(req)
 
-    console.log("Check if there is something: ", validatedData.photo_id)
-    console.log("TYPE OF: ", typeof validatedData.photo_id)
-
     // Check if albums exists and is connected to the user
-    /* const validAlbum = await getSingleAlbum(Number(req.params.id))
+    const validAlbum = await getSingleAlbum(Number(req.params.id))
     if(!validAlbum || validAlbum.userId !== Number(req.token!.sub)) {
         return res.status(401).send({
             status: "error",
             message: "You are not authorized to add this photo"
         })
     }
-    // Check if photo is on the user
-    const checkPhoto = async (photoId:number) => {
-        const validPhoto = await getPhoto(photoId)
-        if(!validPhoto || validPhoto!.userId !== Number(req.token!.sub)) {
-            return res.status(500).send({
-                status: "Error",
-                message: "You are not Authorized or the photo could not be found"
-            })
-        }
+
+    // Set the correct data type for the query
+    const baseId = validatedData.photo_id
+    console.log("baseId: ", baseId)
+
+    let photoIds = baseId
+    if(!isNaN(baseId)) {
+        photoIds = [baseId]
     }
-    validatedData.photo_id.forEach((item:number) => {
-        checkPhoto(item)
-    }) */
+    // Check if photo is owned by user
+    let validPhoto = await getAllPhotosById(photoIds)
+
+    let isValid = true
+    validPhoto.forEach(item => {
+        if(!item || item.userId !== Number(req.token!.sub)) {
+            isValid = false
+        }
+    })
+    if(!isValid){
+        return res.status(500).send({
+            status: "Error",
+            message: "You are not Authorized or the photo could not be found"
+        })
+    }
+
+    //TODO: Check if the photo already exists in album
+
+    /* if(!validPhoto || validPhoto!.userId !== Number(req.token!.sub)) {
+        return res.status(500).send({
+            status: "Error",
+            message: "You are not Authorized or the photo could not be found"
+        })
+    }*/
+
     // Check if Photo already is in album
     /* const validPhotoAlbum = await getPhotosToAlbums(validatedData.photo_id, Number(req.params.id))
-    console.log("Check if there is something: ", validPhotoAlbum)
     if(validPhotoAlbum.length > 0) {
         return res.status(401).send({
             status: "fail",
             message: "Photo already exists in album "
         })
     } */
+
     // Send added photos to the photo_to_album service
-    let photoIds
-    if(isNaN(validatedData.photo_id)) {
-         photoIds = validatedData.photo_id.map((item:number) => {
+    let connectId
+    if(isNaN(baseId)) {
+         connectId = baseId.map((item:number) => {
             return {id: item}
         })
     } else {
-        photoIds = {id: validatedData.photo_id}
+        connectId = {id: baseId}
     }
 
-    console.log("TYPE OF: ", photoIds)
-
     try {
-        await connectPhotoAlbum(photoIds, Number(req.params.id))
+        await connectPhotoAlbum(connectId, Number(req.params.id))
         res.status(200).send({
             status: "success",
             data: null
