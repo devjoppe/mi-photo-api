@@ -60,6 +60,14 @@ export const connectPhotoAlbum = async (photoIds:any, albumIds:number) => {
 }
 
 // DELETE connection between album and photo
-export const deletePhotoConnection = async () => {
+export const deletePhotoConnection = async (photoId:any, albumId:number) => {
     console.log("HELLO! TIME TO DELETE")
+    return prisma.album.update({
+        where: { id: albumId },
+        data: {
+            photos: {
+                disconnect: photoId
+            }
+        }
+    })
 }
