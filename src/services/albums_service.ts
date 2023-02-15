@@ -58,3 +58,8 @@ export const connectPhotoAlbum = async (photoIds:any, albumIds:number) => {
         },
     })
 }
+
+// DELETE connection between album and photo
+export const deletePhotoConnection = async () => {
+
+}

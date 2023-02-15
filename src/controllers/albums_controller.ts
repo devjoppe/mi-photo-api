@@ -1,7 +1,6 @@
 // Import modules
 import {Request, Response} from "express"
-import {check, matchedData, validationResult} from "express-validator";
-import Debug from 'debug'
+import {matchedData, validationResult} from "express-validator";
 
 // Import source
 import {
@@ -10,10 +9,9 @@ import {
     createAlbum,
     updateSingleAlbum,
     connectPhotoAlbum,
+    deletePhotoConnection
 } from "../services/albums_service";
 import {getAllPhotosById} from "../services/photos_service";
-
-const debug = Debug('prisma-photos:album_controller')
 
 // GET All Albums
 export const index = async (req:Request, res:Response) => {
@@ -205,6 +203,22 @@ export const storePhotos = async (req:Request, res:Response) => {
         return res.status(401).send({
             status: "fail",
             message: "Could not add photo to album"
+        })
+    }
+}
+
+// DELETE connection between album and photo
+export const destroyPhoto = async (req:Request, res:Response) => {
+    try {
+        await deletePhotoConnection()
+        res.status(200).send({
+            status: "success",
+            data: null
+        })
+    } catch (err) {
+        return res.status(401).send({
+            status: "fail",
+            message: "Could not remove photo from album"
         })
     }
 }
