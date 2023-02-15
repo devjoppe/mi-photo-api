@@ -153,6 +153,7 @@ export const storePhotos = async (req:Request, res:Response) => {
     if(!isNaN(baseId)) {
         photoIds = [baseId]
     }
+    console.log("Hur ser PhotoIds ut: ", photoIds)
     // Check if photo is owned by user
     let validPhoto = await getAllPhotosById(photoIds)
     let isValid = true
@@ -209,6 +210,37 @@ export const storePhotos = async (req:Request, res:Response) => {
 
 // DELETE connection between album and photo
 export const destroyPhoto = async (req:Request, res:Response) => {
+
+    console.log("Check photoId: ", req.params.photoId)
+    console.log("Check albumId: ", req.params.albumId)
+
+    // Number(req.params.photoId)
+    const photoId = [ Number(req.params.photoId) ]
+    console.log("DELETE connection: ", photoId)
+
+
+    // Get the image the user wants to disconnect
+    let validPhoto = await getAllPhotosById(photoId)
+
+    console.log("Kollar validPhoto: ", validPhoto)
+
+    // Does the photo exists or is the photo connected to an album??
+    if(validPhoto.length <= 0 || validPhoto[0].albums.length <= 0) {
+        return res.status(400).send({
+            status: "fail",
+            message: "No photo found, or the photo is not part of this album"
+        })
+    }
+    // Check if the album exists and if the user owns the album
+    // Does not need to check if photo is the users. If it is in album then the validation is already done.
+    console.log("CHECK THE USER ID IN PHOTO ALBUM: ", validPhoto[0].albums[0].userId)
+    if(req.token!.sub !== validPhoto[0].albums[0].userId || Number(req.params.albumId) !== validPhoto[0].albums[0].id) {
+        return res.status(401).send({
+            status: "fail",
+            message: "You are not authorized on this album"
+        })
+    }
+
     try {
         await deletePhotoConnection()
         res.status(200).send({
