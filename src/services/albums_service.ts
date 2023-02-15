@@ -49,7 +49,6 @@ export const updateSingleAlbum = async (albumData:album, albumId:number) => {
 
 // POST photos to album
 export const connectPhotoAlbum = async (photoIds:any, albumIds:number) => {
-    console.log("WHAT THE FUCK: ", photoIds)
     return prisma.album.update({
         where: { id: albumIds },
         data: {

@@ -21,7 +21,6 @@ export const getAllPhotos = async (userId:number) => {
 
 // Get All based on photo ID
 export const getAllPhotosById = async (photoId:any) => {
-    console.log("PhotoId in service: " , photoId)
     return prisma.photo.findMany({
         where: {
             id: {
@@ -29,7 +28,9 @@ export const getAllPhotosById = async (photoId:any) => {
             }
         },
         select: {
-            userId: true
+            id: true,
+            userId: true,
+            albums: true
         }
     })
 }

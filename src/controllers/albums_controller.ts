@@ -1,6 +1,6 @@
 // Import modules
 import {Request, Response} from "express"
-import {matchedData, validationResult} from "express-validator";
+import {check, matchedData, validationResult} from "express-validator";
 import Debug from 'debug'
 
 // Import source
@@ -128,7 +128,7 @@ export const update = async (req:Request, res:Response) => {
 // POST photos to album
 export const storePhotos = async (req:Request, res:Response) => {
 
-    // Validation of data
+    // Validation
     const validationErrors = validationResult(req)
     if(!validationErrors.isEmpty()) {
         return res.status(400).send({
@@ -148,9 +148,8 @@ export const storePhotos = async (req:Request, res:Response) => {
         })
     }
 
-    // Set the correct data type for the query
+    // Variable for setting the correct data type
     const baseId = validatedData.photo_id
-    console.log("baseId: ", baseId)
 
     let photoIds = baseId
     if(!isNaN(baseId)) {
@@ -158,7 +157,6 @@ export const storePhotos = async (req:Request, res:Response) => {
     }
     // Check if photo is owned by user
     let validPhoto = await getAllPhotosById(photoIds)
-
     let isValid = true
     validPhoto.forEach(item => {
         if(!item || item.userId !== Number(req.token!.sub)) {
@@ -172,25 +170,21 @@ export const storePhotos = async (req:Request, res:Response) => {
         })
     }
 
-    //TODO: Check if the photo already exists in album
+    // Check if the photo already exists in Album
+    console.log("Check the photo ID: ", validPhoto)
+    for(let i=0; i < validPhoto.length; i++) {
+        let checkAlbum = validPhoto[i].albums
+        if(checkAlbum.length > 0) {
+            if(checkAlbum[0].id == Number(req.params.id)) {
+                return res.status(400).send({
+                    status: "fail",
+                    message: "The photos you trying to add already exists in album"
+                })
+            }
+        }
+    }
 
-    /* if(!validPhoto || validPhoto!.userId !== Number(req.token!.sub)) {
-        return res.status(500).send({
-            status: "Error",
-            message: "You are not Authorized or the photo could not be found"
-        })
-    }*/
-
-    // Check if Photo already is in album
-    /* const validPhotoAlbum = await getPhotosToAlbums(validatedData.photo_id, Number(req.params.id))
-    if(validPhotoAlbum.length > 0) {
-        return res.status(401).send({
-            status: "fail",
-            message: "Photo already exists in album "
-        })
-    } */
-
-    // Send added photos to the photo_to_album service
+    // correct type before sending in to ConnectPhotoAlbum service
     let connectId
     if(isNaN(baseId)) {
          connectId = baseId.map((item:number) => {
