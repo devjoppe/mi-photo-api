@@ -21,7 +21,6 @@ router.post('/', photoValidation, validateToken, store)
 router.patch('/:id', photoValidation, validateToken, update)
 
 // DELETE Photo
-// TODO: Update this with Albums
 router.delete('/:id', validateToken, destroy)
 
 export default router
