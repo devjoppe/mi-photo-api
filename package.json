@@ -1,11 +1,11 @@
 {
-  "name": "06-prisma-boilerplate",
+  "name": "mi-photo-api",
   "version": "1.0.0",
   "description": "",
   "main": "build/server.js",
   "scripts": {
     "build": "tsc",
-    "migrate": "npx prisma migrate deploy",
+    "migrate": "npx prisma deploy",
     "dev": "cross-env DEBUG=prisma-photos:* nodemon server.ts",
     "start": "node build/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
