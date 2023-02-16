@@ -45,8 +45,8 @@ export const show = async (req:Request, res:Response) => {
             data: {
                 id: singleAlbum!.id,
                 title: singleAlbum!.title,
-                // TODO: This one below needs to be fixed
-                //photos: singleAlbum!.photos.map(rel => { {return rel.photos}})
+                photos: singleAlbum!.photos
+                // .map(rel => { {return rel.photos}})
             }
         })
     } catch(err) {
