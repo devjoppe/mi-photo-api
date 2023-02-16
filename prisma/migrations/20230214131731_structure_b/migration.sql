@@ -5,13 +5,13 @@
 
 */
 -- DropForeignKey
-ALTER TABLE `photosinalbums` DROP FOREIGN KEY `photosInAlbums_albumId_fkey`;
+ALTER TABLE `photosInAlbums` DROP FOREIGN KEY `photosInAlbums_albumId_fkey`;
 
 -- DropForeignKey
-ALTER TABLE `photosinalbums` DROP FOREIGN KEY `photosInAlbums_photoId_fkey`;
+ALTER TABLE `photosInAlbums` DROP FOREIGN KEY `photosInAlbums_photoId_fkey`;
 
 -- DropTable
-DROP TABLE `photosinalbums`;
+DROP TABLE `photosInAlbums`;
 
 -- CreateTable
 CREATE TABLE `_AlbumToPhoto` (
