@@ -9,7 +9,8 @@ import {
     createAlbum,
     updateSingleAlbum,
     connectPhotoAlbum,
-    deletePhotoConnection
+    deletePhotoConnection,
+    deleteAlbum
 } from "../services/albums_service";
 import {getAllPhotosById} from "../services/photos_service";
 
@@ -224,8 +225,11 @@ export const destroy = async (req:Request, res:Response) => {
 
     try {
         await deletePhotoConnection(photoIds, Number(req.params.id))
-
-        console.log("WORKING")
+        await deleteAlbum(Number(req.params.id))
+        res.status(200).send({
+            status: "success",
+            data: null
+        })
     } catch (err) {
         return res.status(401).send({
             status: "fail",
