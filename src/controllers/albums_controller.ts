@@ -205,11 +205,39 @@ export const storePhotos = async (req:Request, res:Response) => {
     }
 }
 
+// DELETE album without deleting photos - Just remove the connections.
+export const destroy = async (req:Request, res:Response) => {
+    // Check if album exist and that the user is the owner
+    const validAlbum = await getSingleAlbum(Number(req.params.id))
+    if(!validAlbum || req.token!.sub !== validAlbum.userId) {
+        return res.status(400).send({
+            status: "fail",
+            message: "Not authorized or the album does not exist"
+        })
+    }
+
+    // Get all images from the album
+    console.log("Get all photos in album: ", validAlbum.photos)
+    const photoIds = validAlbum.photos.map(item => {
+        return {id: item.id}
+    })
+
+    try {
+        await deletePhotoConnection(photoIds, Number(req.params.id))
+
+        console.log("WORKING")
+    } catch (err) {
+        return res.status(401).send({
+            status: "fail",
+            message: "Could not delete the album"
+        })
+    }
+}
+
 // DELETE connection between album and photo
 export const destroyPhoto = async (req:Request, res:Response) => {
 
     const photoId = [ Number(req.params.photoId) ]
-
     // Get the image the user wants to disconnect
     let validPhoto = await getAllPhotosById(photoId)
 
@@ -229,7 +257,6 @@ export const destroyPhoto = async (req:Request, res:Response) => {
         })
     }
     try {
-        //connectId = {id: baseId}
         await deletePhotoConnection({id: Number(req.params.photoId)}, Number(req.params.albumId))
         res.status(200).send({
             status: "success",

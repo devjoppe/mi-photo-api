@@ -3,7 +3,7 @@ import express from "express";
 
 // Import source
 import {validateToken} from "../middleware/jwt";
-import {index, show, store, update, storePhotos, destroyPhoto} from '../controllers/albums_controller'
+import {index, show, store, update, destroy, storePhotos, destroyPhoto} from '../controllers/albums_controller'
 import {albumValidation, photoToAlbumValidation} from "../validations/album_validation";
 
 const router = express.Router()
@@ -22,6 +22,9 @@ router.patch('/:id', albumValidation, validateToken, update)
 
 // POST photo to album
 router.post('/:id/photos', photoToAlbumValidation, validateToken, storePhotos)
+
+// DELETE Album
+router.delete('/:id', validateToken, destroy)
 
 // DELETE Remove connection between album and photo
 router.delete('/:albumId/photos/:photoId', validateToken, destroyPhoto)
