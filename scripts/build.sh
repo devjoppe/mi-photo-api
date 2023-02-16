@@ -11,7 +11,7 @@ fi
 npm run build-app
 
 ## Only run migrations if DATABASE_URL is set
-if [[ ! -z "$DATABASE_URL" ]];
+if [[ -n "$DATABASE_URL" ]];
 then
 	echo "DATABASE_URL exists, running migrations..."
 	npm run migrate
