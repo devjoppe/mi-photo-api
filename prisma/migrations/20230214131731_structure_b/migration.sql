@@ -8,7 +8,7 @@
 ALTER TABLE `photosinalbums` DROP FOREIGN KEY `photosInAlbums_albumId_fkey`;
 
 -- DropForeignKey
-/* ALTER TABLE `photosinalbums` DROP FOREIGN KEY `photosInAlbums_photoId_fkey`; */
+ALTER TABLE `photosinalbums` DROP FOREIGN KEY `photosInAlbums_photoId_fkey`;
 
 -- DropTable
 DROP TABLE `photosinalbums`;
