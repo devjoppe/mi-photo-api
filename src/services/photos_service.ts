@@ -78,3 +78,17 @@ export const deletePhoto = async (photoId:number) => {
         }
     })
 }
+
+// DELETE Disconnect photo from Albums
+export const disconnectFromAlbums = async (photoId:number, albumsId:any) => {
+    return prisma.photo.update({
+        where: {
+            id: photoId
+        },
+        data: {
+            albums: {
+                disconnect: albumsId
+            }
+        }
+    })
+}

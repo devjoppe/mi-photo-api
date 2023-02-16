@@ -10,7 +10,7 @@ import {
     updateSingleAlbum,
     connectPhotoAlbum,
     deletePhotoConnection,
-    deleteAlbum
+    deleteAlbum,
 } from "../services/albums_service";
 import {getAllPhotosById} from "../services/photos_service";
 

@@ -3,7 +3,8 @@ import {Request, Response} from "express"
 import {matchedData, validationResult} from "express-validator";
 
 // Import source
-import {getAllPhotos, getPhoto, createPhoto, updatePhoto, deletePhoto} from "../services/photos_service";
+import {getAllPhotos, getPhoto, createPhoto, updatePhoto, deletePhoto, disconnectFromAlbums} from "../services/photos_service";
+import {getAlbumPhotoId} from "../services/albums_service";
 
 // GET All photos
 export const index = async (req:Request, res:Response) => {
@@ -140,18 +141,33 @@ export const destroy = async (req:Request, res:Response) => {
             message: "Photo does not exists"
         })
     }
-    if(validPhoto!.userId == req.token!.sub) {
-        try {
-            const deletedPhotos = await deletePhoto(Number(validPhoto!.id)) // TODO: Refactor this one
-            res.status(200).send({
-                status: "success",
-                data: null
-            })
-        } catch (err) {
-            return res.status(500).send({
-                status: "error",
-                message: "Could not remove photo"
-            })
-        }
+    // Not authorized user
+    if(validPhoto!.userId !== req.token!.sub) {
+        return res.status(401).send({
+            status: "fail",
+            message: "You are not authorized to remove this photo"
+        })
+    }
+    // Remove connection to albums and then delete the photo
+    // Get albums this photo is a part of
+    const photoAlbum = await getAlbumPhotoId(Number(validPhoto!.id))
+    const albumIds = photoAlbum.map(item => {
+        return {id: item.id}
+    })
+
+    console.log("Do I get the albums: ", albumIds)
+
+    try {
+        await disconnectFromAlbums(Number(validPhoto!.id), albumIds)
+        await deletePhoto(Number(validPhoto!.id))
+        res.status(200).send({
+            status: "success",
+            data: null
+        })
+    } catch (err) {
+        return res.status(500).send({
+            status: "error",
+            message: "Could not remove photo"
+        })
     }
 }

@@ -25,6 +25,19 @@ export const getSingleAlbum = async (albumId:number) => {
     })
 }
 
+// GET Albums based on photo ids
+export const getAlbumPhotoId = async (photoId:number) => {
+    return prisma.album.findMany({
+        where: {
+            photos: {
+                some: {
+                    id: 1
+                }
+            }
+        }
+    })
+}
+
 // POST new album
 export const createAlbum = async (albumData:album) => {
     return prisma.album.create({
