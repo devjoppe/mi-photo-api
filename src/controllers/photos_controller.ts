@@ -16,7 +16,7 @@ export const index = async (req:Request, res:Response) => {
             data: allPhotos
         })
     } catch (err) {
-        return res.status(401).send({
+        return res.status(400).send({
             status: "fail",
             message: "Could not get user photos"
         })
@@ -27,24 +27,23 @@ export const index = async (req:Request, res:Response) => {
 export const show = async (req:Request, res:Response) => {
     try {
         const singlePhoto = await getPhoto(Number(req.params.id))
-        if(singlePhoto!.userId == req.token!.sub){
-            res.status(200).send({
-                status: "success",
-                data: {
-                    id: singlePhoto!.id,
-                    title: singlePhoto!.title,
-                    url: singlePhoto!.url,
-                    comment: singlePhoto?.comment
-                }
-            })
-        } else {
+        if(singlePhoto!.userId !== req.token!.sub){
             return res.status(401).send({
                 status: "fail",
                 message: "No permission to access this photo"
             })
         }
+        res.status(200).send({
+            status: "success",
+            data: {
+                id: singlePhoto!.id,
+                title: singlePhoto!.title,
+                url: singlePhoto!.url,
+                comment: singlePhoto?.comment
+            }
+        })
     } catch (err) {
-        return res.status(401).send({
+        return res.status(400).send({
             status: "fail",
             message: "Could not get user photo"
         })
@@ -61,7 +60,6 @@ export const store = async (req:Request, res:Response) => {
             data: validationErrors.array()
         })
     }
-
     const validatedData = matchedData(req)
 
     try {
@@ -82,7 +80,7 @@ export const store = async (req:Request, res:Response) => {
             }
         })
     } catch (err){
-        return res.status(401).send({
+        return res.status(400).send({
             status: "fail",
             message: "Could not create new photo"
         })
@@ -99,65 +97,55 @@ export const update = async (req:Request, res:Response) => {
             data: validationErrors.array()
         })
     }
-
     const validatedData = matchedData(req)
 
-    // Check valid photo
-    const validPhoto = await getPhoto(Number(req.params.id))
-    //TODO: Come back and check this. If you try to update an ID that does not exists?
-    if(validPhoto!.userId == req.token!.sub) {
-        try {
-            const patchPhoto = await updatePhoto({
-                title: validatedData.title,
-                url: validatedData.url,
-                comment: validatedData.comment,
-            },Number(validPhoto!.id))
-
-            res.status(200).send({
-                status: "success",
-                data: patchPhoto
+    try {
+        // Check valid photo
+        const validPhoto = await getPhoto(Number(req.params.id))
+        if(validPhoto!.userId !== req.token!.sub) {
+            return res.status(401).send({
+                status: "fail",
+                message: "User not authorized to update this photo"
             })
-        } catch (err) {
-            return res.status(500).send({
-                status: "error",
-                message: "Could not update photo in database" })
         }
-    } else {
-        // Returns error if not users photo
-        return res.status(401).send({
-            status: "fail",
-            message: "User not authorized to update this photo"
+        // Update photo
+        const patchPhoto = await updatePhoto({
+            title: validatedData.title,
+            url: validatedData.url,
+            comment: validatedData.comment,
+        },Number(validPhoto!.id))
+
+        res.status(200).send({
+            status: "success",
+            data: patchPhoto
         })
+    } catch (err) {
+        return res.status(400).send({
+            status: "error",
+            message: "Could not update photo" })
     }
 }
 
 // DELETE Photo
 export const destroy = async (req:Request, res:Response) => {
-    // Check valid photo
-    const validPhoto = await getPhoto(Number(req.params.id))
-    if(!validPhoto) {
-        return res.status(500).send({
-            status: "error",
-            message: "Photo does not exists"
-        })
-    }
-    // Not authorized user
-    if(validPhoto!.userId !== req.token!.sub) {
-        return res.status(401).send({
-            status: "fail",
-            message: "You are not authorized to remove this photo"
-        })
-    }
-    // Remove connection to albums and then delete the photo
-    // Get albums this photo is a part of
-    const photoAlbum = await getAlbumPhotoId(Number(validPhoto!.id))
-    const albumIds = photoAlbum.map(item => {
-        return {id: item.id}
-    })
-
-    console.log("Do I get the albums: ", albumIds)
 
     try {
+        // Check valid photo
+        const validPhoto = await getPhoto(Number(req.params.id))
+        // Not authorized user
+        if(validPhoto!.userId !== req.token!.sub) {
+            return res.status(401).send({
+                status: "fail",
+                message: "You are not authorized to remove this photo"
+            })
+        }
+        // Remove connection to albums and then delete the photo
+        // Get albums this photo is a part of
+        const photoAlbum = await getAlbumPhotoId(Number(validPhoto!.id))
+        const albumIds = photoAlbum.map(item => {
+            return {id: item.id}
+        })
+
         await disconnectFromAlbums(Number(validPhoto!.id), albumIds)
         await deletePhoto(Number(validPhoto!.id))
         res.status(200).send({
@@ -165,7 +153,7 @@ export const destroy = async (req:Request, res:Response) => {
             data: null
         })
     } catch (err) {
-        return res.status(500).send({
+        return res.status(400).send({
             status: "error",
             message: "Could not remove photo"
         })

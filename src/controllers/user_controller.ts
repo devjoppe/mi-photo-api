@@ -1,5 +1,4 @@
 // Import modules
-import Debug from 'debug'
 import {Request, Response} from 'express'
 import {matchedData, validationResult} from "express-validator";
 import bcrypt from 'bcrypt'
@@ -8,8 +7,6 @@ import jwt, {JwtPayload} from 'jsonwebtoken'
 // Import source
 import { getUserByEmail, registerUser } from "../services/user_service";
 import { jwtPayload } from "../types/user";
-
-const debug = Debug('prisma-photos:user_controller')
 
 // Register a new user
 export const register = async (req:Request, res:Response) => {
@@ -127,9 +124,9 @@ export const refresh = (req:Request, res:Response) => {
 
     // Check schema
     if(authSchema.toLowerCase() !== "bearer") {
-        return res.status(401).send({
+        return res.status(405).send({
             status: "fail",
-            message: "Authorization failed"
+            message: "The schema is not bearer"
         })
     }
     // Verify and get refresh payload
