@@ -30,7 +30,7 @@ model Photo {
   id      Int     @id @default(autoincrement())
   title   String
   url     String?
-  comment String  @default("No comments")
+  comment String? @default("No comments")
   userId  Int
   user    User    @relation(fields: [userId], references: [id])
   albums  Album[]

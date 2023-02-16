@@ -16,5 +16,5 @@ export const photoValidation = [
             return Promise.reject("That is not a valid URL")
         }
     }),
-    body('comment').isString().bail().isLength({ min: 3 })
+    body('comment').optional().isString().bail().isLength({ min: 3 })
 ]
